@@ -1,0 +1,7 @@
+# key: fgdck
+# name: forge-deck
+# --
+*Forge:*
+#+begin_src text :noweb-ref forge-$1
+$0
+#+end_src

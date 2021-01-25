@@ -1,0 +1,6 @@
+# key: csv
+# name: cube-csv
+# --
+#+begin_src csv :tangle no :noweb no $1
+$0
+#+end_src

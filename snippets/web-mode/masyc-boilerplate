@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: masyc-boilerplate
+# key: masyc
+# --
+/**
+ * @fileOverview
+ * @name $1
+ * @description $2
+ * @authors
+ *   Shawn Martin-Truesdell <shawn@masyc.com>
+ * @license SEE LICENSE
+ * @copyright
+ *   THIS SOFTWARE IS THE PROPERTY OF THE MASYC GROUP, INC. AND IS
+ * 	 PROTECTED UNDER THE COPYRIGHT, TRADE SECRET, AND PROPRIETARY LAWS
+ * 	 OF THE UNITED STATES AND, WHEN APPLICABLE, THE STATE OF CALIFORNIA
+ */
+$0

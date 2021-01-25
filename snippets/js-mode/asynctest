@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: asynctest
+# key: asynctest
+# --
+test($1, (done) => {
+  // Given
+
+  // When
+  $2.then((result) => {
+
+    return done();
+  });
+});

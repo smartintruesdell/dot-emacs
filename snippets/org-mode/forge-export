@@ -1,0 +1,13 @@
+# key: fgexp
+# name: forge-export
+# --
+*** $1+$2 ($3)
+#+begin_src text :tangle jmp-decks/jmp-${1:$(downcase yas-text)}-${2:$(downcase yas-text)}.dck :noweb yes
+  [metadata]
+  Name=JMP $1$2
+  [Avatar]
+
+  [Main]
+  <<forge-${3:$(downcase yas-text)}-${1:$(downcase yas-text)}>>
+  <<forge-${3:$(downcase yas-text)}-${2:$(downcase yas-text)}>>
+#+end_src

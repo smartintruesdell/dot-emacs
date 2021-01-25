@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: scryfall-link
+# key: scl
+# --
+[[https://scryfall.com/search?q=%22${1:`yas-selected-text`}%22&unique=cards&as=grid&order=name][$1]${0:$$(insert "]")}

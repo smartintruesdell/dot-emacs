@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: method-doc
+# key: method
+# --
+/**
+* @method
+* @name $1
+* @description
+*   $2
+* @return { $3 } $4
+*/$0

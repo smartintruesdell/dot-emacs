@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: unit-test
+# contributor: Shawn Martin-Truesdell <shawn@masyc.com>
+# key: unit-test
+# group: testing
+# type: snippet
+# --
+@isTest
+public static void $1() {
+    // Given
+
+    // When
+    Test.startTest();
+    $2
+    Test.stopTest();
+
+    // Then
+    $3
+}

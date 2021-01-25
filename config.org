@@ -259,8 +259,8 @@ Tabnine uses machine learning to do smarter autocomplete.
   (use-package company-tabnine
     :ensure t
     :config
-    ;; Trigger completion immediately.
-    (setq company-idle-delay 0.25)
+    ;; Trigger completion not-quite-immediately.
+    (setq company-idle-delay 0.5)
 
     ;; Number the candidates (use M-1, M-2 etc to select completions).
     (setq company-show-numbers t)
@@ -365,6 +365,23 @@ operating system.
             </style>")))
 #+END_SRC
 
+*** Line Endings
+
+I work a lot on Windows. It's not my favorite OS, but it's what my employer uses and so I'm somewhat locked in.
+
+However, I hate carraige return line feeds. Especially in my source code repositories.
+
+See [[https://www.emacswiki.org/emacs/EndOfLineTips][this EmacsWIKI page]] for details on forcing unix line endings.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defun no-junk-please-were-unixish ()
+  (let ((coding-str (symbol-name buffer-file-coding-system)))
+    (when (string-match "-\\(?:dos\\|mac\\)$" coding-str)
+      (set-buffer-file-coding-system 'unix))))
+
+  (add-hook 'find-file-hooks 'no-junk-please-were-unixish)
+#+END_SRC
+
 ** Web Development
 *** CSS – LESS – SCSS
 
@@ -462,7 +479,7 @@ Company is a text completion framework for Emacs. The name stands for "complete 
     :delight
     :custom
     (company-begin-commands '(self-insert-command))
-    (company-idle-delay 0)
+    (company-idle-delay 0.5)
     (company-minimum-prefix-length 1)
     (company-show-numbers t)
     (company-tooltip-align-annotations 't)
@@ -790,7 +807,7 @@ An autonomous emacs major-mode for editing web templates.
     (web-mode-markup-indent-offset 2))
 
   (add-hook 'web-mode-hook #'(lambda ()
-                               (enable-minor-modep
+                               (enable-minor-mode
                                 '("\\.js?\\'" . prettier-js-mode))))
 
   (add-hook 'web-mode-hook #'(lambda ()
@@ -1162,6 +1179,21 @@ cycling through =C-x o= (=other-window=).
            ("C-c k" . windmove-up)
            ("C-c l" . windmove-right)))
 #+END_SRC
+
+** XML
+
+#+begin_src emacs-lisp :tangle yes
+  (use-package hideshow)
+  (use-package sgml-mode)
+  (add-to-list 'hs-special-modes-alist
+               '(nxml-mode
+                 "<!--\\|<[^/>]*[^/]>"
+                 "-->\\|</[^/>]*[^/]>"
+
+                 "<!--"
+                 sgml-skip-tag-forward
+                 nil))
+#+end_src
 * Org Mode
 
 Org-Mode is the killer feature, and after basic text editing ergonomics it is THE main reason to use Emacs. We love it for its organizational tools, it's presentational tools, and for the awesome power of literate programming.
@@ -1856,6 +1888,225 @@ you can have a better estimate of the time that needs to be given to each task.
     (org-show-notification-handler (lambda (msg) (alert msg))))
 #+END_SRC
 
+**** Org-Clock-CSV
+
+My employer uses an ERP driven job cost system for time entry. This is somewhat time consuming to maintain manually, so I trust the =org-clock-csv= package to make exporting my time easier.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  ;; Need iso8601 to parse Org-mode date strings YYYY-MM-DD into useful data
+  (require 'parse-time)
+  (require 'cl)
+  (require 'cl-lib)
+
+  ;; Utility for immutable update of a single element in a list
+  (defun seq-update-nth (n fn xa)
+    "A mechanism for applying `fn` to the `n`th element of `xa` returning a new seq"
+    (seq-map-indexed
+     (lambda (elt idx)
+       (if (eq n idx)
+           (funcall fn elt)
+         elt))
+     xa))
+
+  ;; Utility for picking just values from a plist.
+  (defun plist-get-values (plist)
+    (if (null plist) nil
+      (cons (cadr plist) (plist-get-values (cddr plist)))))
+
+  ;; First some standard customization for org-clock-csv
+  (defvar my/custom-org-clock-csv-header "week,employee,date,cost_type,cost_code,explanation,hours,rate,subledger_type,subledger")
+
+  (defun my/org-clock-csv-blocknum-of-timestamp (date-string)
+    "Given the start timestamp of a task (2020-01-01 Mon 04:15), determine the 3/4-digit numeric week as a string for the date"
+    (let* ((date-elements
+            (parse-time-string
+             (format-time-string "%Y-%m-%d %a %H:%M" (date-to-time date-string))))
+           (day-of-week (nth 6 date-elements))
+           (month (nth 4 date-elements))
+           (day-of-week-seq
+            (seq-map-indexed
+             (lambda (date idx) (mod (- day-of-week idx) 7))
+             (reverse (number-sequence 1 (- (nth 3 date-elements) 1)))))
+           (week
+            (seq-reduce
+             (lambda (acc day) (if (eq 1 day) (+ acc 1) acc))
+             ;; Step over the elapsed days of the month
+             day-of-week-seq
+             1)))
+      (format "%s%s" (org-clock-csv--pad month) (org-clock-csv--pad week))))
+
+  (defun my/org-clock-csv-format-excel-date (date-string)
+    "Given the start timestamp of a task (2020-01-01 Mon 04:15), return the US date format of the date portion of that timestamp, ie 01/01/2020"
+    (let ((date-elements (parse-time-string date-string)))
+      (mapconcat #'identity
+                 (list (number-to-string (nth 4 date-elements))
+                       (number-to-string (nth 3 date-elements))
+                       (number-to-string (nth 5 date-elements)))
+                 "/")))
+
+  (defun my/org-clock-duration-to-integer (duration)
+    "Given a duration string of shape \"HH:MM\", returns an integer number of minutes elapsed."
+    (apply #'+ (seq-map-indexed
+                (lambda (val idx)
+                  (if (eq idx 0) (* 60 (string-to-number val))
+                    (string-to-number val)))
+                (split-string duration ":" t))))
+
+  (defun my/get-billable-duration (duration)
+    "Given a duration in ##:MM format, returns a number 1.5 in hours, rounded to the nearest appropriate billable multiple of 0.5h."
+    (let* ((round-down-to-half-below 40)
+           (round-up-to-half-above 10)
+           (total-minutes (my/org-clock-duration-to-integer duration))
+           (minutes (mod total-minutes 60))
+           (hours (+ (/ total-minutes 60)
+                     (if (< round-down-to-half-below minutes) 1 0)))
+           (minutes (cond ((< round-down-to-half-below minutes) 0)
+                          ((> round-up-to-half-above minutes) 0)
+                          (t 0.5))))
+      (number-to-string (+ hours minutes))))
+
+  (defun my/custom-org-clock-csv-row-fmt (plist)
+    "Custom row formatting function."
+    (let ((employee-number "81"))
+      (mapconcat #'identity
+                 (list (my/org-clock-csv-blocknum-of-timestamp
+                        (plist-get plist ':start))
+                       employee-number
+                       (my/org-clock-csv-format-excel-date (plist-get plist ':start))
+                       (org-clock-csv--read-property plist "COST_TYPE")
+                       (org-clock-csv--read-property plist "COST_CODE")
+                       (org-clock-csv--escape (plist-get plist ':task))
+                       (my/get-billable-duration (plist-get plist ':duration))
+                       (org-clock-csv--read-property plist "BILLABLE_RATE")
+                       (org-clock-csv--read-property plist "SUBLEDGER_TYPE")
+                       (org-clock-csv--read-property plist "SUBLEDGER"))
+                 ",")))
+
+  ;; With the above all set, we want to extend the base org-clock-csv
+  ;; to add some advice extending the element aggregation to allow filtering and
+  ;; consolidating rows.
+
+  (defun my/integer-to-clock-duration (n)
+    "Given a number of elapsed minutes, returns a duration string of shape \"HH:MM\"."
+    (format "%s:%s"
+            (number-to-string (/ n 60))
+            (org-clock-csv--pad (mod n 60))))
+
+  (defun my/combine-durations (&rest durations)
+    "Given any number of duration strings of shape \"HH:MM\", combines them together and returns an aggregate duration string in the same shape."
+    (my/integer-to-clock-duration
+     (seq-reduce
+      (lambda (acc duration) (+ acc (my/org-clock-duration-to-integer duration)))
+      durations 0)))
+
+  (defun my/sort-datestrings (&rest datestrings)
+    "Give any number of Org timestamp date strings of shape \"YYYY-MM-DD ddd HH:MM\", sorts that list in ascending order."
+    (sort datestrings
+          (lambda (a b) (time-less-p (date-to-time a) (date-to-time b)))))
+
+  (defun my/sort-entries-by-date (entries)
+    (sort entries
+          (lambda (a b) (time-less-p (date-to-time (plist-get a ':start)) (date-to-time (plist-get b ':start))))))
+
+  (defun my/concat-element-plists (left right)
+    "Given two parsed ELEMENT plists, combines them together into a single item"
+    (let* ((start (car (my/sort-datestrings (plist-get left ':start) (plist-get right ':start))))
+           (end (cadr (my/sort-datestrings (plist-get left ':end) (plist-get right ':end))))
+           (combined-duration (my/combine-durations (plist-get left ':duration) (plist-get right ':duration))))
+      (list :task (plist-get left ':task)
+            :headline (plist-get left ':headline)
+            :parents (plist-get left ':parents)
+            :title (plist-get left ':title)
+            :category (plist-get left ':category)
+            :start start
+            :end end
+            :duration combined-duration
+            :properties (plist-get left ':properties)
+            :effort (plist-get left ':effort)
+            :ishabit (plist-get left ':ishabit)
+            :tags (plist-get left ':tags))))
+
+  (defun my/consolidate-entries-get-key (entry)
+    "Given a parsed ELEMENT plist, returns a unique path+date key"
+    (let* ((split-date (parse-time-string (plist-get entry :start)))
+           (year (number-to-string (nth 5 split-date)))
+           (month (number-to-string (nth 4 split-date)))
+           (day (number-to-string (nth 3 split-date)))
+           (fullpath (concat (s-join org-clock-csv-headline-separator (plist-get entry ':parents)) "/" (plist-get entry :task)))
+           (keyparts (list fullpath year month day)))
+      (mapconcat 'identity keyparts "::")))
+
+  (defun my/consolidate-entries (entries)
+    "Given a list of parsed ELEMENT plists, combines tasks with matching paths."
+    (plist-get-values
+     (seq-reduce
+      (lambda (acc entry)
+        (let ((key (my/consolidate-entries-get-key entry)))
+          (if (lax-plist-get acc key)
+              (lax-plist-put acc key (my/concat-element-plists (lax-plist-get acc key) entry))
+            (lax-plist-put acc key entry))))
+      entries
+      nil)))
+
+  (defun my/filter-by-date (entries &optional from-date to-date)
+    "Given a date range and a list of entries, filters the entries to only those which fall within the specified dates."
+    ;; TODO: There's an issue here where dates that don't have time components
+    ;; parse as MUCH earlier time strings. As a result, :start dates are always
+    ;; AFTER the from-date, and the whole thing falls over.
+    (if (not (or from-date to-date)) entries
+      (seq-filter
+       (lambda (entry)
+         (let ((from-time (if (null from-date) nil (date-to-time from-date)))
+               (to-time (if (null to-date) nil (date-to-time to-date)))
+               (start (date-to-time (plist-get entry ':start)))
+               (end (date-to-time (plist-get entry ':end))))
+           (seq-reduce
+            (lambda (acc next) (and acc next))
+            (list (if (null from-time) t (time-less-p from-time start))
+                  (if (null to-time) t (time-less-p end to-time)))
+            t)))
+       entries)))
+
+  (defun advice-once (symbol where function &optional props)
+    (advice-add symbol :after `(lambda (&rest _) (advice-remove ',symbol ',function)))
+    (advice-add symbol where function props))
+
+  (defun my/consolidate-and-filter (entries)
+    (my/consolidate-entries
+     (my/sort-entries-by-date
+      (my/filter-by-date
+       entries
+       (read-string "Start Date:")
+       (read-string "End Date:")))))
+
+  (defun my/org-clock-csv (&optional infile no-switch from-date to-date use-current)
+    "Custom wrapper around org-clock-csv to add two features I found useful but didn't think merited commiting to the project:
+
+  1. Add entry consolidation
+     I want clock entries to be bundled by task/day, so that multiple clocks on the same day are considered part of the same entry.
+  2. Add filtering by date range
+     I only want to output the last day/week's entries, rather that needing to do post processing to determine which entries are new."
+    (interactive)
+    (advice-once #'org-clock-csv--get-entries :filter-return #'my/consolidate-and-filter)
+    (org-clock-csv infile no-switch use-current))
+
+  (use-package org-clock-csv
+    :ensure nil
+    :after org-clock
+    :load-path "~/.emacs.d/lib/org-clock-csv/org-clock-csv.el"
+    :custom
+    (org-clock-csv-header my/custom-org-clock-csv-header)
+    (org-clock-csv-row-fmt #'my/custom-org-clock-csv-row-fmt))
+#+end_src
+
+#+RESULTS:
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package org-clock-csv
+    :load-path "~/.emacs.d/lib/org-clock-csv/org-clock-csv.el")
+#+END_SRC
+
+
 *** Languages
 
 With that, I can compile many languages with =org-mode=.
@@ -1963,8 +2214,6 @@ organize your thoughts.
     (use-package company-graphviz-dot
       )
 #+END_SRC
-
-
 * AVY
 
 Avy allows for quickly navigating to an arbitrary point in your buffer.
@@ -2040,3 +2289,34 @@ To better support this, I've added some libraries to manage frame zooming.
   ;; Apply the scaling I want to each newly created frame:
   (add-hook 'after-make-frame-functions #'my-zoom-frm-by-dpi)
 #+END_SRC
+
+* Ledger
+
+I've decided to start managing my expenses using =ledger-mode= in the continuing migration of my life out of my head and into emacs.
+
+Disabled on 12/21/2020 because it turns out =ledger= doesn't run on Windows. All the more reason to move to *nix.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package ledger-mode
+    :mode ("\\.dat\\'"
+           "\\.ledger\\'")
+    :custom (ledger-clear-whole-transactions t))
+#+END_SRC
+
+
+* Misc Elisp tools
+#+BEGIN_SRC emacs-lisp
+  (defun ebpa/edebug-remove-all-instrumentation ()
+    "Remove all edebug instrumentation by visiting each function
+  definition and running `eval-defun`."
+    (interactive)
+    (mapatoms
+     (lambda (symbol)
+       (when-let (pos (car-safe (get symbol 'edebug)))
+         (with-current-buffer (marker-buffer pos)
+           (goto-char (marker-position pos))
+           (eval-defun nil))))))
+#+END_SRC
+
+#+RESULTS:
+: ebpa/edebug-remove-all-instrumentation

@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: test
+# key: test
+# --
+test('$1', () => {
+  // Given
+  $0
+  // When
+
+  // Then
+});

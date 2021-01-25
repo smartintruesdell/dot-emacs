@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: personal-boilerplate
+# key: personal
+# --
+/**
+ * @fileOverview
+ * @name $1
+ * @description $2
+ * @authors
+ *   Shawn Martin-Truesdell <shawn@martin-truesdell.com>
+ * @license SEE LICENSE
+ */
+$0

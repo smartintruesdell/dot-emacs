@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: jsdoc.fn
+# key: jsdoc
+# --
+/**
+ * @function
+ * @name $1
+ * @description
+ *   $2
+ * @param { Any } arg
+ * @returns { void }
+ */
+$0
