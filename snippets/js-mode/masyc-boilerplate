@@ -3,7 +3,8 @@
 # key: boil
 # --
 /**
- * @file $1
+ * $0
+ *
  * @authors
  *   Shawn Martin-Truesdell <shawn@masyc.com>
  * @copyright
@@ -11,4 +12,3 @@
  *   PROTECTED UNDER THE COPYRIGHT, TRADE SECRET, AND PROPRIETARY LAWS
  *   OF THE UNITED STATES AND, WHEN APPLICABLE, THE STATE OF CALIFORNIA
  */
-$0

@@ -3,9 +3,8 @@
 # key: masyc
 # --
 /**
- * @fileOverview
- * @name $0
- * @description $2
+ * $0
+ *
  * @authors
  *   Shawn Martin-Truesdell <shawn@masyc.com>
  * @copyright

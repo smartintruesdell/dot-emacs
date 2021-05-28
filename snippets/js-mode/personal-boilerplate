@@ -3,10 +3,8 @@
 # key: personal
 # --
 /**
- * @fileOverview
- * @name $1
- * @description $2
+ * $0
+ *
  * @authors
  *   Shawn Martin-Truesdell <shawn@martin-truesdell.com>
  */
- $0
