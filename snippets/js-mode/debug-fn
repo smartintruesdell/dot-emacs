@@ -2,7 +2,7 @@
 # name: debug-fn
 # key: debug
 # --
-const debug = (v) => {
-      console.log(v);
-      return v;
-};
+function debug<T>(value: T):T {
+  console.log(value);
+  return value;
+}
