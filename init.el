@@ -10,9 +10,6 @@
 ;; collection.
 (setq gc-cons-threshold (* 50 1000 1000))
 
-(require 'package)
-(package-initialize)
-
 (if (file-exists-p (expand-file-name "config.el" user-emacs-directory))
     (load-file (expand-file-name "config.el" user-emacs-directory))
   (org-babel-load-file (expand-file-name "config.org" user-emacs-directory)))
@@ -29,8 +26,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(unicode-fonts exec-path-from-shell use-package-ensure-system-package dash delight use-package)))
+ )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
