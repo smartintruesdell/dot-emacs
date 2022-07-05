@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: lpl-plugin-for-library-modules
+# key: lpllm
+# --
+-- Set a global table so that we can detect modules that are loaded and need
+-- plugin patching but which do not have an init method for hooks.
+LPL_Additional_Paths = LPL_Additional_Paths or {}
+LPL_Additional_Paths["/`(file-relative-name (file-name-sans-extension (buffer-file-name)) (projectile-project-root))`_plugins.config"] = true

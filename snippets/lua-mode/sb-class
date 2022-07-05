@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: class
+# key: sbclass
+# --
+--[[
+  $0
+]]
+require("/scripts/util.lua")
+require("/scripts/questgen/util.lua")
+
+-- Class ----------------------------------------------------------------------
+
+$1 = $1 or createClass("$1")
+
+-- Constructor ----------------------------------------------------------------
+
+function $1:init()
+
+end

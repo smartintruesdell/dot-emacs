@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: lpl-plugin-boilerplate
+# key: lplp
+# --
+require "/scripts/lpl_load_plugins.lua"
+local PLUGINS_PATH =
+  "/`(file-relative-name (file-name-sans-extension (buffer-file-name)) (projectile-project-root))`_plugins.config"
+$0$1init = PluginLoader.add_plugin_loader("`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`", PLUGINS_PATH, $1init)

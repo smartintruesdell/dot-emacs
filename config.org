@@ -79,7 +79,9 @@ first install it
   (straight-use-package 'use-package)
   (setq straight-use-package-by-default t)
   (setq use-package-always-demand t)
-
+  (add-to-list 'package-archives
+               '("melpa" . "https://melpa.org/packages/"))
+  (package-initialize)
   (use-package dash)
 #+END_SRC
 
@@ -1288,32 +1290,28 @@ codepoints starting from codepoint-start."
 Roam enables a connected notes network backed by an sqlite database to help
 organize your thoughts.
 
-#+BEGIN_SRC emacs-lisp :tangle no
-    (add-to-list 'exec-path "C:/Users/Shawn.MASYC/AppData/Roaming/.emacs.d/bin/sqlite3")
-    (use-package org-roam
-      :hook
-      (after-init . org-roam-mode)
-      :custom
-      (org-roam-directory (expand-file-name (format "%s/org-roam" xdg-data)))
-      (org-roam-index-file (expand-file-name (format "%s/org-roam/index.org")))
-      :bind (:map org-roam-mode-map
-                  (("C-c n l" . org-roam)
-                   ("C-c n f" . org-roam-find-file)
-                   ("C-c n g" . org-roam-graph-show))
-                  :map org-mode-map
-                  (("C-c n i" . org-roam-insert))
-                  (("C-c n I" . org-roam-insert-immediate))))
+#+BEGIN_SRC emacs-lisp :tangle yes
+      (use-package org-roam
+        :hook
+        (after-init . org-roam-mode)
+        :custom
+        (org-roam-directory (expand-file-name (format "%s/org-roam" xdg-data)))
+        (org-roam-index-file (expand-file-name (format "%s/org-roam/index.org")))
+        :bind (("C-c n f" . org-roam-node-find)
+               ("C-c n g" . org-roam-graph)
+               ("C-c n i" . org-roam-node-insert)
+               ("C-c n I" . org-roam-insert-immediate)))
 
-    (use-package graphviz-dot-mode
-      :config
-      (setq graphviz-dot-indent-width 4))
+      (use-package graphviz-dot-mode
+        :config
+        (setq graphviz-dot-indent-width 4))
 
-    (use-package company-org-roam
-      :config
-      (add-to-list 'company-backends 'company-org-roam))
+      (use-package company-org-roam
+        :config
+        (add-to-list 'company-backends 'company-org-roam))
 
-    (use-package company-graphviz-dot
-      )
+      (straight-use-package '(company-graphviz-dot :type git :host github :repo "ppareit/graphviz-dot-mode")
+        )
 #+END_SRC
 
 
@@ -1329,7 +1327,9 @@ I'm a Software Engineer by trade, and Emacs offers me everything I want in an ID
     ;; set prefix for lsp-command-keymap)
     (setq lsp-keymap-prefix "C-c l")
     :hook ((typescript-mode . lsp)
+           (web-mode . lsp)
            (rust-mode . lsp)
+           (lua-mode . lsp)
            (lsp-mode . lsp-enable-which-key-integration))
     :commands lsp)
 
@@ -1554,15 +1554,16 @@ I like to use [[https://prettier.io/][prettier]] to get my TypeScript code clean
 don't forget to install it with your package manager.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-      (use-package prettier-js
-        :hook ((js-mode . prettier-js-mode)
-               (typescript-mode . prettier-js-mode))
-        :custom
-        (prettier-js-args '("--print-width" "80"
-                            "--single-quote" "true"
-                            "--trailing-comma" "es5"
-                            "--arrow-parens" "always"
-                            )))
+  (use-package prettier-js
+    :hook ((js-mode . prettier-js-mode)
+           (typescript-mode . prettier-js-mode))
+    ;;:custom
+    ;; (prettier-js-args '("--print-width" "80"
+    ;;                     "--single-quote" "true"
+    ;;                     "--trailing-comma" "es5"
+    ;;                     "--arrow-parens" "always"
+    ;;                     ))
+    )
 #+END_SRC
 
 *** Salesforce
@@ -1621,6 +1622,13 @@ For interacting with REST services, I'm giving restclient.el a try.
   (use-package restclient)
 #+end_src
 
+** Other
+
+*** Lua
+
+#+begin_src emacs-lisp :tangle yes
+  (use-package lua-mode)
+#+END_SRC
 * Advanced Configuration
 ** Alert
 
@@ -1743,7 +1751,7 @@ Remembering all the dates is not obvious, especially since some varies every yea
 
 Always good to have a dashboard.
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp :tangle yes
   (use-package dashboard
     :init
     (add-hook 'after-init-hook 'dashboard-refresh-buffer)
@@ -2452,18 +2460,17 @@ When I'm running Emacs in the WSL 2 environment, I'm often frustrated by the cop
 
 This seeks to fix that.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle yes
   (when (string-match "-[Mm]icrosoft" operating-system-release)
-    (defconst powershell-exe "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe")
-    (when (file-executable-p powershell-exe)
-      (defun my/wsl-browse-url (url &optional _new-window)
-        "Opens link via powershell.exe"
-        (interactive (browse-url-interactive-arg "URL: "))
-        (let ((quotedUrl (format "start '%s'", url)))
-          (apply 'call-process powershell-exe
-                 nil 0 nil (list "-Command" quotedUrl))))
-      (setq-default browse-url-browser-function 'my/wsl-browse-url))
-
+    ;; (defconst powershell-exe "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe")
+    ;; (when (file-executable-p powershell-exe)
+    ;;   (defun my/wsl-browse-url (url &optional _new-window)
+    ;;     "Opens link via powershell.exe"
+    ;;     (interactive (browse-url-interactive-arg "URL: "))
+    ;;     (let ((quotedUrl (format "start '%s'", url)))
+    ;;       (apply 'call-process powershell-exe
+    ;;              nil 0 nil (list "-Command" quotedUrl))))
+    ;;   (setq-default browse-url-browser-function 'my/wsl-browse-url))
     (defun wsl-copy (start end)
       "Copies the currect selection to the WSL clipboard"
       (interactive "r")

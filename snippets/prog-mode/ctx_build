@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ctx_build
+# key: ctx
+# --
+const $1_ctx = useMemo(() => build_state_context($1), [$1]);
