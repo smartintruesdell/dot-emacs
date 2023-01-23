@@ -45,17 +45,38 @@ See =./config.el= for the generated file.
 =straight.el= is a replacement for =package.el=, which is the default package manager for EMACs. It's pretty fancy, and instead of pulling compiled blobs it synchronizes local repositories for each package and allows for easy local editing of those repositories.
 
 #+begin_src emacs-lisp :tangle yes
+  (require 'package)                   ; Bring in to the environment all package management functions
+
+  ;; A list of package repositories
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			   ("org"   . "https://orgmode.org/elpa/")
+			   ("elpa"  . "https://elpa.gnu.org/packages/")))
+
+  (unless package-archive-contents     ; Unless a package archive already exists,
+    (package-refresh-contents))        ; Refresh package contents so that Emacs knows which packages to load
+
+
+  ;; Initialize use-package on non-linux platforms
+  (unless (package-installed-p 'use-package)        ; Unless "use-package" is installed, install "use-package"
+    (package-install 'use-package))
+
+  (require 'use-package)                            ; Once it's installed, we load it using require
+
+  ;; Make sure packages are downloaded and installed before they are run
+  ;; also frees you from having to put :ensure t after installing EVERY PACKAGE.
+  (setq use-package-always-ensure t)
+
   (defvar bootstrap-version)
   (let ((bootstrap-file
-         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-        (bootstrap-version 5))
+	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+	(bootstrap-version 5))
     (unless (file-exists-p bootstrap-file)
       (with-current-buffer
-          (url-retrieve-synchronously
-           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-           'silent 'inhibit-cookies)
-        (goto-char (point-max))
-        (eval-print-last-sexp)))
+	  (url-retrieve-synchronously
+	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+	   'silent 'inhibit-cookies)
+	(goto-char (point-max))
+	(eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
 #+end_src
 
@@ -79,8 +100,6 @@ first install it
   (straight-use-package 'use-package)
   (setq straight-use-package-by-default t)
   (setq use-package-always-demand t)
-  (add-to-list 'package-archives
-               '("melpa" . "https://melpa.org/packages/"))
   (package-initialize)
   (use-package dash)
 #+END_SRC
@@ -132,7 +151,7 @@ For a better user experience of GNU Emacs, here are the default values I use.
   (setq backup-directory-alist '(("." . "~/.emacs-saves")))
   (setq ring-bell-function 'ignore)                 ; No more dings
   (global-unset-key (kbd "C-z"))                    ; No more minimizing on accident
-  (pixel-scroll-precision-mode)
+  ;(pixel-scroll-precision-mode) ;; emacs 29
 #+END_SRC
 
 ** Unicode Fonts support
@@ -233,7 +252,7 @@ Instead, I want those to be kept together in a separate folder so that my source
 ** Prefer backward-kill-word
 
 #+begin_quote
-Emacs Wizards try to avoid hitting the backspace key, because it's just remote enough from home-row to be annoying. We make typing mistakes all the time, but if you type faster than about 50 wpm, it's more economical to kill the entire word and re-type it than to painstakingly backspace to your error.
+Emacs Wizards try to avoid hitting the backspace key, because it's just remote enough from home-row to be annoying. We make typing mistakes all the time, but if you type faster than about 50 wpm, it's more economical to kill the entire word and re-type it than to painstakingly backspace to your
 #+end_quote
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -343,7 +362,7 @@ Org-Mode is the killer feature, and after basic text editing ergonomics it is TH
       :after org
       :hook (org-mode . toc-org-enable))
     ;; Cleans up "online mode" when connecting using TRAMP
-    (use-package org-indent :straight nil :after org)
+    (use-package org-indent :straight nil :ensure nil :after org)
 #+END_SRC
 
 ** Utility Function Definitions
@@ -967,6 +986,7 @@ you can have a better estimate of the time that needs to be given to each task.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package org-clock
     :straight nil
+    :ensure nil
     :after org
     :preface
     (defun my/org-mode-ask-effort ()
@@ -1210,12 +1230,12 @@ My employer uses an ERP driven job cost system for time entry. This is somewhat 
 With that, I can compile many languages with =org-mode=.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package ob-emacs-lisp :straight nil :after org)
-  (use-package ob-java :straight nil :after org)
-  (use-package ob-typescript :straight nil :after org)
-  (use-package ob-org :straight nil :after org)
-  (use-package ob-python :straight nil :after org)
-  (use-package ob-rust :straight nil :after org)
+  (use-package ob-emacs-lisp :straight nil :ensure nil :after org)
+  (use-package ob-java :straight nil :ensure nil :after org)
+  (use-package ob-typescript :straight nil :ensure nil  :after org)
+  (use-package ob-org :straight nil :ensure nil :after org)
+  (use-package ob-python :straight nil :ensure nil :after org)
+  (use-package ob-rust :straight nil :ensure nil :after org)
 #+END_SRC
 
 *** Typefaces
@@ -1227,63 +1247,12 @@ I removed the "**" and ="***"= ligatures because they were interfering with Org 
 #+begin_src emacs-lisp :tangle yes
   (use-package fira-code-mode
     :custom (fira-code-mode-disabled-ligatures '("**" "***"))
-    :hook (prog-mode js-mode ts-mode web-mode apex-mode rust-mode)
+    :hook (prog-mode js-mode ts-mode typescript-mode typescriptreact-mode rust-mode)
     :init (add-hook 'after-make-frame-functions #'fira-code-mode--setup))
 
-  (set-frame-font "Fira Code Retina-9") ; Set the default fixed-rhythm font.
+  (set-frame-font "-*-Fira Code-semilight-normal-normal-*-14-*-*-*-m-0-iso10646-1") ; Set the default fixed-rhythm font.
   (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")
 #+end_src
-
-This was the older, more manual setup that predates =fira-code-mode=
-#+BEGIN_SRC emacs-lisp :tangle no
-
-(defun my-correct-symbol-bounds (pretty-alist)
-    "Prepend a TAB character to each symbol in this alist,
-this way compose-region called by prettify-symbols-mode
-will use the correct width of the symbols
-instead of the width measured by char-width."
-    (mapcar (lambda (el)
-              (setcdr el (string ?\t (cdr el)))
-              el)
-            pretty-alist))
-
-  (defun my-ligature-list (ligatures codepoint-start)
-    "Create an alist of strings to replace with
-codepoints starting from codepoint-start."
-    (let ((codepoints (-iterate '1+ codepoint-start (length ligatures))))
-      (-zip-pair ligatures codepoints)))
-(setq my-fira-code-ligatures
-    (let* ((ligs '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\"
-                  "{-" "[]" "::" ":::" ":=" "!!" "!=" "!==" "-}"
-                  "--" "---" "-->" "->" "->>" "-<" "-<<" "-~"
-                  "#{" "#[" "##" "###" "####" "#(" "#?" "#_" "#_("
-                  ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*"
-                  "/**" "/=" "/==" "/>" "//" "///" "&&" "||" "||="
-                  "|=" "|>" "^=" "$>" "++" "+++" "+>" "=:=" "=="
-                  "===" "==>" "=>" "=>>" "<=" "=<<" "=/=" ">-" ">="
-                  ">=>" ">>" ">>-" ">>=" ">>>" "<*" "<*>" "<|" "<|>"
-                  "<$" "<$>" "<!--" "<-" "<--" "<->" "<+" "<+>" "<="
-                  "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<" "<~"
-                  "<~~" "</" "</>" "~@" "~-" "~=" "~>" "~~" "~~>" "%%"
-                  "x" ":" "+" "+" "*")))
-      (my-correct-symbol-bounds (my-ligature-list ligs #Xe100))))
-
-(defun my-set-fira-code-ligatures ()
-    "Add Fira Code ligatures for use with prettify-symbols-mode."
-    (setq prettify-symbols-alist
-          (append my-fira-code-ligatures prettify-symbols-alist))
-    (prettify-symbols-mode))
-
-(add-hook 'js-mode-hook 'my-set-fira-code-ligatures)
-(add-hook 'java-mode-hook 'my-set-fira-code-ligatures)
-(add-hook 'web-mode-hook 'my-set-fira-code-ligatures)
-(add-hook 'python-mode-hook 'my-set-fira-code-ligatures)
-(add-hook 'apex-mode-hook 'my-set-fira-code-ligatures)
-
-(set-frame-font "Fira Code Retina-9") ; Set the default fixed-rhythm font.
-(set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")
-
-#+END_SRC
 
 *** Org-Roam
 
@@ -1319,28 +1288,69 @@ organize your thoughts.
 
 I'm a Software Engineer by trade, and Emacs offers me everything I want in an IDE without all of the cruft or mouse based actions.
 
+** Tree-Sitter
+
+#+begin_src emacs-lisp :tangle yes
+  (use-package tree-sitter
+    :ensure t
+    :config
+    ;; activate tree-sitter on any buffer containing code for which it has a
+    ;; parser available
+    (global-tree-sitter-mode)
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+  (use-package tree-sitter-langs
+    :ensure t
+    :after tree-sitter)
+#+end_src
+
+** Typescript
+
+#+begin_src emacs-lisp :tangle yes
+  (use-package typescript-mode
+    :after tree-sitter
+    :config
+    ;; Split from typescript-mode to allow eglot to determine the langauge
+    (define-derived-mode typescriptreact-mode typescript-mode
+      "TypeScript TSX")
+    (add-to-list 'auto-mode-alist '("\\.tsx?" . typescriptreact-mode))
+    (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
+
+  (use-package tsi
+    :after tree-sitter
+    :straight (:host github :repo "orzechowskid/tsi.el")
+    :commands (tsi-typescript-mode tsi-json-mode tsi-css-mode)
+    :init
+    (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
+    (add-hook 'json-mode-hook (lambda () (tsi-json-mode 1)))
+    (add-hook 'css-mode-hook (lambda () (tsi-css-mode 1)))
+    (add-hook 'scss-mode-hook (lambda () (tsi-scss-mode 1))))
+
+  (use-package apheleia
+    :ensure t
+    :config
+    (apheleia-global-mode +1))
+#+end_src
+
+
 ** LSP
 
 #+begin_src emacs-lisp :tangle yes
-  (use-package lsp-mode
-    :init
-    ;; set prefix for lsp-command-keymap)
-    (setq lsp-keymap-prefix "C-c l")
-    :hook ((typescript-mode . lsp)
-           (web-mode . lsp)
-           (rust-mode . lsp)
-           (lua-mode . lsp)
-           (lsp-mode . lsp-enable-which-key-integration))
-    :commands lsp)
-
-  (use-package lsp-ivy
-    :commands lsp-ivy-workspace-symbol)
+  (use-package eglot
+    :ensure t)
 #+end_src
 
 
 ** TabNine
 
 Tabnine uses machine learning to do smarter autocomplete.
+
+#+begin_quote
+=== BEGIN TABNINE KEY ===
+shawntruesdell@gmail.com
+fpctaeuujatzulocpebuumbdfkbbfqaj
+=== END TABNINE KEY ===
+#+end_quote
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package company-tabnine
@@ -1539,44 +1549,6 @@ See [[https://www.emacswiki.org/emacs/EndOfLineTips][this EmacsWIKI page]] for d
     :mode "\\.scss\\'")
 #+END_SRC
 
-*** JavaScript & Typescript (Mostly Typescript)
-
-#+begin_src emacs-lisp :tangle yes
-      (use-package js2-mode
-        :hook ((js-mode . js2-minor-mode))
-        :custom (js-indent-level 2))
-      (use-package typescript-mode
-        :init
-        (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode)))
-#+end_src
-
-I like to use [[https://prettier.io/][prettier]] to get my TypeScript code clean. To use it,
-don't forget to install it with your package manager.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package prettier-js
-    :hook ((js-mode . prettier-js-mode)
-           (typescript-mode . prettier-js-mode))
-    ;;:custom
-    ;; (prettier-js-args '("--print-width" "80"
-    ;;                     "--single-quote" "true"
-    ;;                     "--trailing-comma" "es5"
-    ;;                     "--arrow-parens" "always"
-    ;;                     ))
-    )
-#+END_SRC
-
-*** Salesforce
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  ;; Salesforce Apex bindings
-  (use-package apex-mode
-    :straight (apex-mode :type git :host github :repo "orangatame/apex-mode")
-    :mode ("\\.cls\\'" . apex-mode)
-    :mode ("\\.trigger\\'" . apex-mode)
-    :mode ("\\.cmp\\'" . web-mode))
-#+END_SRC
-
 ** Systems Development
 *** Rust
 
@@ -1714,6 +1686,7 @@ Remembering all the dates is not obvious, especially since some varies every yea
 
   (use-package holidays
     :straight nil
+    :ensure nil
     :custom
     (holiday-bahai-holidays nil)
     (holiday-christian-holidays
@@ -1782,6 +1755,7 @@ For those who didn't know, GNU Emacs is also a file explorer.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package dired
     :straight nil
+    :ensure nil
     :bind (:map dired-mode-map ("M-+" . dired-create-empty-file))
     :custom
     (dired-auto-revert-buffer t)
@@ -1846,6 +1820,7 @@ The code below, executes =org-babel-tangle= asynchronously when
                                                     ',init-tangle-start-time)))
               (message "ERROR: %s as tangle failed." ,org-file)))))))
 #+END_SRC
+
 
 ** ERC
 
@@ -1933,19 +1908,20 @@ GNU Emacs's undo system allows you to recover any past state of a buffer. To do
 this, Emacs treats "undo itself as another editing that can be undone".
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package undo-tree
-    :bind ("C--" . undo-tree-redo)
-    :init (global-undo-tree-mode)
-    :custom
-    (undo-tree-visualizer-timestamps t)
-    (undo-tree-visualizer-diff t))
+    (use-package undo-tree
+      :bind ("C--" . undo-tree-redo)
+      :init (global-undo-tree-mode)
+      :custom
+      (undo-tree-visualizer-timestamps t)
+      (undo-tree-visualizer-diff t)
+      (undo-tree-auto-save-history nil))
 #+END_SRC
 
-*** =web-mode=
+*** =web-mode= (Deprecated)
 
 An autonomous emacs major-mode for editing web templates.
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle no
   (use-package web-mode
     :hook ((css-mode web-mode) . rainbow-mode)
     :mode (("\\.blade\\.php\\'" . web-mode)
@@ -1976,22 +1952,6 @@ An autonomous emacs major-mode for editing web templates.
     (web-mode-comment-style 2)
     (web-mode-enable-current-element-highlight t)
     (web-mode-markup-indent-offset 2))
-
-  (add-hook 'web-mode-hook #'(lambda ()
-                               (enable-minor-mode
-                                '("\\.js?\\'" . prettier-js-mode))))
-
-  (add-hook 'web-mode-hook #'(lambda ()
-                               (enable-minor-mode
-                                '("\\.jsx?\\'" . prettier-js-mode))))
-
-  (add-hook 'web-mode-hook #'(lambda ()
-                               (enable-minor-mode
-                                '("\\.ts?\\'" . prettier-js-mode))))
-
-  (add-hook 'web-mode-hook #'(lambda ()
-                               (enable-minor-mode
-                                '("\\.tsx?\\'" . prettier-js-mode))))
 #+END_SRC
 
 *** =which-key=
@@ -2159,10 +2119,9 @@ This minor mode supports a nicer UX for longform writing. I'm going to give it a
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package olivetti
     :custom
-    (olivetti-body-width 85)
+    (olivetti-body-width 120)
     :hook
-    ((org-mode text-mode prog-mode) . olivetti-mode)
-    )
+    ((org-mode text-mode prog-mode) . olivetti-mode))
 #+END_SRC
 ** Projectile
 
@@ -2266,6 +2225,7 @@ It is often annoying to see unnecessary blank spaces at the end of a line or fil
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package simple
     :straight nil
+    :ensure nil
     :hook (before-save . delete-trailing-whitespace))
 #+END_SRC
 
@@ -2290,6 +2250,7 @@ switch directly to it and perform an action. By default, GNU Emacs does not give
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package window
     :straight nil
+    :ensure nil
     :bind (("C-x 3" . hsplit-last-buffer)
            ("C-x 2" . vsplit-last-buffer))
     :preface
@@ -2438,7 +2399,7 @@ Disabled on 12/21/2020 because it turns out =ledger= doesn't run on Windows. All
 
 
 * Misc Elisp tools
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
   (defun ebpa/edebug-remove-all-instrumentation ()
     "Remove all edebug instrumentation by visiting each function
   definition and running `eval-defun`."
