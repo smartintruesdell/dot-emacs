@@ -80,17 +80,6 @@ See =./config.el= for the generated file.
     (load bootstrap-file nil 'nomessage))
 #+end_src
 
-** Utilities
-
-#+begin_src emacs-lisp :tangle yes
-  (defun my-adjoin-to-list-or-symbol (element list-or-symbol)
-    (let ((list (if (not (listp list-or-symbol))
-                    (list list-or-symbol)
-                  list-or-symbol)))
-      (require 'cl-lib)
-      (cl-adjoin element list)))
-#+end_src
-
 ** use-package
 
 To be able to manage its configuration with =use-package= it is necessary to
@@ -154,13 +143,6 @@ For a better user experience of GNU Emacs, here are the default values I use.
   ;(pixel-scroll-precision-mode) ;; emacs 29
 #+END_SRC
 
-** Unicode Fonts support
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package unicode-fonts
-  :init (unicode-fonts-setup))
-#+END_SRC
-
 ** Better file management with XDG
 
 To keep the user's home and the =~/.emacs.d= folder as clean as possible, I
@@ -170,7 +152,7 @@ Be careful that GNU Emacs will not create the appropriate folders if they do not
 exist. Therefore, it is necessary to create them yourself:
 
 #+BEGIN_SRC bash
-  mkdir ~/.cache/emacs ~/AppData/Roaming/emacs/
+  mkdir ~/.cache/emacs
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -252,7 +234,7 @@ Instead, I want those to be kept together in a separate folder so that my source
 ** Prefer backward-kill-word
 
 #+begin_quote
-Emacs Wizards try to avoid hitting the backspace key, because it's just remote enough from home-row to be annoying. We make typing mistakes all the time, but if you type faster than about 50 wpm, it's more economical to kill the entire word and re-type it than to painstakingly backspace to your
+Emacs Wizards try to avoid hitting the backspace key, because it's just remote enough from home-row to be annoying. We make typing mistakes all the time, but if you type faster than about 50 wpm, it's more economical to kill the entire word and re-type it than to painstakingly backspace to your mistake
 #+end_quote
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -267,13 +249,6 @@ Such a silly little thing, but I can't get rid of the frame title bar so I'm goi
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (setq-default frame-title-format '("Shawn's Emacs :: %b"))
-#+END_SRC
-
-** Prefer pixel-scroll-mode
-#+BEGIN_SRC emacs-lisp :tangle no
-  ;; DISABLED by :tangle no
-  (when (>= emacs-major-version 26)
-    (pixel-scroll-mode))
 #+END_SRC
 
 ** Theme
@@ -291,39 +266,10 @@ Such a silly little thing, but I can't get rid of the frame title bar so I'm goi
     :init (nano-modeline-mode))
 #+end_src
 
-*** Old Theme
-#+BEGIN_SRC emacs-lisp :tangle no
-      ;; (use-package flucui-themes)
-      ;; (use-package doom-themes
-      ;;   <<theme-faces>>
-      ;;   :config
-      ;;   (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/"))
-      ;;   ;(load-theme 'flucui-light t))
-      ;;   (load-theme 'github-modern t))
-
-      (use-package doom-modeline
-        :straight (doom-modeline :type git :host github :repo "seagle0128/doom-modeline")
-        :hook
-        (after-init . doom-modeline-mode)
-        :custom
-        (doom-modeline-height 30)
-        :custom-face
-        (mode-line ((t (:height 80))))
-        (mode-line-inactive ((t (:height 80)))))
-  ;      (doom-modeline-bar ((t (:background "#5EC4FF")))))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  ;; :custom-face TODO
-  :custom-face
-  (org-table ((t (:background "#ECECEC"))))
-#+END_SRC
-
-
 ** Turn off mouse interface
 
 Since I never use the mouse with GNU Emacs, I prefer not to use certain
-graphical elements as seen as the menu bar, toolbar, scrollbar and tooltip that
+graphical elements as seen as the menu bar, toolbar, scrollbar and toolt
 I find invasive.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -414,31 +360,18 @@ Org-Mode is the killer feature, and after basic text editing ergonomics it is TH
   (org-ditaa-jar-path "~/.local/lib/ditaa0_9.jar")
 #+END_SRC
 
-*** Setup Org-Crypt for encrypted org entries
-
-#+begin_src emacs-lisp :tangle yes
-  ;(require 'epa-file)
-  (custom-set-variables '(epg-gpg-program  "/usr/bin/gpg2"))
-  (epa-file-enable)
-
-  (require 'org-crypt)
-  (org-crypt-use-before-save-magic)
-  (setq org-tags-exclude-from-inheritance '("crypt"))
-  ;;  set to nil to use symmetric encryption.
-  (setq org-crypt-key nil)
-#+end_src
-
 *** Load Org modules to add new features
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb-ref org-mode-custom-variables
-  (org-modules '(org-crypt
-                 org-habit
+  (org-modules '(org-habit
                  org-info
                  org-mouse
                  org-protocol))
 #+END_SRC
 
 *** Tags and Todo Settings
+
+TODO: I should review these, as I basically never use them anymore. Maybe I will in a laptop world
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb-ref org-mode-custom-variables
   (org-tag-alist '(("@work" . ?w)
@@ -490,7 +423,6 @@ Org-Mode is the killer feature, and after basic text editing ergonomics it is TH
   (org-blank-before-new-entry '((heading . t)))
   (org-cycle-include-plain-lists 'integrate)
   (org-expiry-inactive-timestamps t)
-  ;;Removed |beamer icalendar man org texinfo| as unused
   (org-export-backends '(ascii html latex md))
   (org-startup-folded nil)
   (org-startup-indented t)
@@ -504,6 +436,8 @@ Org-Mode is the killer feature, and after basic text editing ergonomics it is TH
 
 This elisp function lets us set the face without clearing out other customizations (colors, underscores, etc).
 
+TODO: Check if this is still necessary.
+
 #+begin_src emacs-lisp :tangle no :noweb-ref org-mode-config
   (defun my-adjoin-to-list-or-symbol (element list-or-symbol)
     (let ((list (if (not (listp list-or-symbol))
@@ -511,6 +445,7 @@ This elisp function lets us set the face without clearing out other customizatio
                   list-or-symbol)))
       (require 'cl-lib)
       (cl-adjoin element list)))
+
   (defun fix-org-block-faces ()
     (mapc
      (lambda (face)
@@ -1575,15 +1510,30 @@ Rust is so great. I've been really enjoying the development experience of workin
 Flycheck handles linting in *Script and Rust.
 
 #+begin_src emacs-lisp :tangle yes
+  ;; use local eslint from node_modules before global
+  ;; http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
+  (defun my/use-eslint-from-node-modules ()
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (eslint (and root
+                        (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                          root))))
+      (when (and eslint (file-executable-p eslint))
+        (setq-local flycheck-javascript-eslint-executable eslint))))
+
   (use-package flycheck
     :hook
-    (after-init .  global-flycheck-mode))
+    (after-init .  global-flycheck-mode)
+    :config
+    (flycheck-add-mode 'javascript-eslint 'typescriptreact-mode)
+    (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules))
+
 
   (use-package flycheck-rust
     :after rust-mode
     :init
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-
 #+end_src
 
 *** REST testing
@@ -1681,62 +1631,44 @@ In the continuing theme of "I hate having to use another tool (my mouse) for tha
 Remembering all the dates is not obvious, especially since some varies every year.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package calendar
-    :custom (calendar-mark-holidays-flag t))
+    (use-package calendar
+      :custom (calendar-mark-holidays-flag t))
 
-  (use-package holidays
-    :straight nil
-    :ensure nil
-    :custom
-    (holiday-bahai-holidays nil)
-    (holiday-christian-holidays
-     '((holiday-easter-etc -47 "Mardi Gras")
-       (holiday-easter-etc 0 "Easter")
-       (holiday-fixed 11 1 "All Saints' Day")
-       (holiday-fixed 12 24 "Christmas Eve")
-       (holiday-fixed 12 25 "Christmas Day")))
-    (holiday-general-holidays
-     '((holiday-fixed 1 1 "New Year's Day")
-       (holiday-fixed 2 14 "Valentine's Day")
-       (holiday-fixed 3 8 "International Women's Day")
-       (holiday-fixed 3 14 "Saint Patrick's Day")
-       (holiday-fixed 4 4 "Independence Day")
-       (holiday-fixed 10 31 "Halloween")
-       (holiday-float 11 4 -1 "Thanksgiving")
-       (holiday-fixed 12 31 "New Year's Eve")))
-    (holiday-hebrew-holidays nil)
-    (holiday-islamic-holidays nil)
-    (holiday-local-holidays
-     '((holiday-fixed 5 1 "Labor Day")
-       (holiday-float 5 0 2 "Mother's Day")
-       (holiday-float 6 0 3 "Father's Day")))
-    (holiday-other-holidays
-     '((holiday-fixed 4 18 "Wedding Anniversary")
-       (holiday-fixed 7 9 "Sebastian's Birthday")
-       (holiday-fixed 7 16 "Shawn's Birthday")
-       (holiday-fixed 8 19 "Alexandra's Birthday")
-       (holiday-fixed 10 9 "Susie's Birthday")
-       (holiday-fixed 10 22 "Jason's Birthday")))
-    (holiday-oriental-holidays nil))
-#+END_SRC
-
-** Dashboard
-
-Always good to have a dashboard.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package dashboard
-    :init
-    (add-hook 'after-init-hook 'dashboard-refresh-buffer)
-    (setq dashboard-startup-banner 'logo)
-    (setq dashboard-set-heading-icons t)
-    (setq dashboard-items '((recents . 5)
-                            (bookmarks . 5)
-                            (projects . 3)
-                            (agenda . 5)
-                            ))
-    :config
-    (dashboard-setup-startup-hook))
+    (use-package holidays
+      :straight nil
+      :ensure nil
+      :custom
+      (holiday-bahai-holidays nil)
+      (holiday-christian-holidays
+       '((holiday-easter-etc -47 "Mardi Gras")
+         (holiday-easter-etc 0 "Easter")
+         (holiday-fixed 11 1 "All Saints' Day")
+         (holiday-fixed 12 24 "Christmas Eve")
+         (holiday-fixed 12 25 "Christmas Day")))
+      (holiday-general-holidays
+       '((holiday-fixed 1 1 "New Year's Day")
+         (holiday-fixed 2 14 "Valentine's Day")
+         (holiday-fixed 3 8 "International Women's Day")
+         (holiday-fixed 3 14 "Saint Patrick's Day")
+         (holiday-fixed 4 4 "Independence Day")
+         (holiday-fixed 10 31 "Halloween")
+         (holiday-float 11 4 -1 "Thanksgiving")
+         (holiday-fixed 12 31 "New Year's Eve")))
+      (holiday-hebrew-holidays nil)
+      (holiday-islamic-holidays nil)
+      (holiday-local-holidays
+       '((holiday-fixed 5 1 "Labor Day")
+         (holiday-float 5 0 2 "Mother's Day")
+         (holiday-float 6 0 3 "Father's Day")))
+      (holiday-other-holidays
+       '((holiday-fixed 1 1 "Emilia's Birthday")
+         (holiday-fixed 4 18 "Wedding Anniversary")
+         (holiday-fixed 7 9 "Sebastian's Birthday")
+         (holiday-fixed 7 16 "Shawn's Birthday")
+         (holiday-fixed 8 19 "Alexandra's Birthday")
+         (holiday-fixed 10 9 "Susie's Birthday")
+         (holiday-fixed 10 22 "Jason's Birthday")))
+      (holiday-oriental-holidays nil))
 #+END_SRC
 
 ** Deadgrep
@@ -1749,8 +1681,6 @@ An improved interface for searching in files, ala grep.
 #+END_SRC
 
 ** Dired
-
-For those who didn't know, GNU Emacs is also a file explorer.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package dired
@@ -1821,34 +1751,6 @@ The code below, executes =org-babel-tangle= asynchronously when
               (message "ERROR: %s as tangle failed." ,org-file)))))))
 #+END_SRC
 
-
-** ERC
-
-ERC is a built-in module for connecting to IRC servers, and I use it with Bitlebee to connect to Discord.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package erc
-    :custom
-    (erc-fill-function 'erc-fill-static)
-    (erc-fill-static-center 22)
-    (erc-hide-list '("JOIN" "PART" "QUIT"))
-    (erc-lurker-hide-list '("JOIN" "PART" "QUIT"))
-    (erc-lurker-threshold-time 43200)
-    (erc-server-reconnect-attempts 5)
-    (erc-server-reconnect-timeout 3)
-    (erc-track-exclude-types '("JOIN" "MODE" "NICK" "PART" "QUIT"
-                               "324" "329" "332" "333" "353" "477"))
-    :config
-    (add-to-list 'erc-modules 'notifications)
-    (erc-services-mode 1)
-    (erc-update-modules))
-
-  (use-package erc-image
-    :after erc
-    :init
-    (add-to-list 'erc-modules 'image)
-    (erc-update-modules))
-#+END_SRC
 ** General
 *** aggressive-indent
 
@@ -2095,6 +1997,8 @@ statements are at a given depth.
 [[https://github.com/Fanael/rainbow-delimiters][Fanael Linithien]]
 #+END_QUOTE
 
+TODO: The only complain I have with this right now is that the colors are too subtle.
+
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
@@ -2123,6 +2027,7 @@ This minor mode supports a nicer UX for longform writing. I'm going to give it a
     :hook
     ((org-mode text-mode prog-mode) . olivetti-mode))
 #+END_SRC
+
 ** Projectile
 
 #+BEGIN_QUOTE
@@ -2172,6 +2077,7 @@ Provides fast access to the recent files.
     (recentf-save-file (expand-file-name (format "%s/emacs/recentf" xdg-cache)))
     :config (run-at-time nil (* 5 60) 'recentf-save-list))
 #+END_SRC
+
 ** Version Control
 
 It is quite common to work on Git repositories, so it is important to have a
@@ -2211,12 +2117,7 @@ while it is being edited.
     :init (global-git-gutter-mode +1))
 #+END_SRC
 
-Another package that I like to use with Git to easily see the changes
-made by previous commits.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package git-timemachine)
-#+END_SRC
+TODO: I want to set up Magit Forge to allow me to do the rest of my GitHub responsibilities (pr review, etc) from within Emacs.
 
 ** Whitespaces
 
@@ -2283,19 +2184,6 @@ hiding its contents.
            ("C-x w" . switch-window-then-swap-buffer)))
 #+END_SRC
 
-*** =windmove=
-
-Allows you to move from one window to another with something more natural than
-cycling through =C-x o= (=other-window=).
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (use-package windmove
-    :bind (("C-c h" . windmove-left)
-           ("C-c j" . windmove-down)
-           ("C-c k" . windmove-up)
-           ("C-c l" . windmove-right)))
-#+END_SRC
-
 ** XML
 
 #+begin_src emacs-lisp :tangle yes
@@ -2319,6 +2207,7 @@ Avy allows for quickly navigating to an arbitrary point in your buffer.
   (use-package avy
     :bind (("C-:" . avy-goto-char)
            ("C-'" . avy-goto-char-2)
+           ("M-j" . avy-goto-char-timer)
            ("M-g f" . avy-goto-line)
            ("M-g w" . avy-goto-word-1)
            ("M-g e" . avy-goto-word-0)
@@ -2339,62 +2228,6 @@ Snippets!
 
   (use-package ivy-yasnippet :after yasnippet)
 
-#+END_SRC
-
-* High DPI Displays
-In my typical workflow I'm switching between standard and high DPI displays pretty regularly.
-
-To better support this, I've added some libraries to manage frame zooming.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  ;(load "zoom-frm")
-  (defun my-dpi (&optional display)
-    "Get the DPI of DISPLAY. DISPLAY is a display name, frame or terminal, as in
-     `display-monitor-attributes-list'."
-    (cl-flet ((pyth (lambda (w h)
-                      (sqrt (+ (* w w)
-                               (* h h)))))
-              (mm2in (lambda (mm)
-                       (/ mm 25.4))))
-      (let* ((atts (frame-monitor-attributes))
-             (pix-w (cl-fourth (assoc 'geometry atts)))
-             (pix-h (cl-fifth (assoc 'geometry atts)))
-             (pix-d (pyth pix-w pix-h))
-             (mm-w (cl-second (assoc 'mm-size atts)))
-             (mm-h (cl-third (assoc 'mm-size atts)))
-             (mm-d (pyth mm-w mm-h)))
-        (/ pix-d (mm2in mm-d)))))
-
-  (defvar my-zoom-frm-wanted-dpi 70
-    "The DPI I want to achieve when using `my-zoom-frm-by-dpi'.")
-
-  (defun my-zoom-frm-by-dpi (&optional frame)
-    "Zoom FRAME so the DPI is closer to `my-zoom-frm-wanted-dpi'."
-    (interactive)
-    (let ((frame (or frame (selected-frame))))
-      (when (frame-parameter frame 'zoomed)
-        (zoom-frm-unzoom frame))
-      (let ((frame-zoom-font-difference (1- (round (/ (my-dpi frame)
-                                                      my-zoom-frm-wanted-dpi)))))
-        (when (called-interactively-p 'interactive)
-          (message "Zooming by %S" frame-zoom-font-difference))
-        (zoom-frm-in frame))))
-
-  ;; Apply the scaling I want to each newly created frame:
-  (add-hook 'after-make-frame-functions #'my-zoom-frm-by-dpi)
-#+END_SRC
-
-* Ledger
-
-I've decided to start managing my expenses using =ledger-mode= in the continuing migration of my life out of my head and into emacs.
-
-Disabled on 12/21/2020 because it turns out =ledger= doesn't run on Windows. All the more reason to move to *nix.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (use-package ledger-mode
-    :mode ("\\.dat\\'"
-           "\\.ledger\\'")
-    :custom (ledger-clear-whole-transactions t))
 #+END_SRC
 
 

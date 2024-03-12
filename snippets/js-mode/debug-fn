@@ -2,7 +2,7 @@
 # name: debug-fn
 # key: debug
 # --
-function debug<T>(value: T):T {
-  console.log(value);
+function debug<T>(value: T, message?: string):T {
+  message ? console.debug(message, value) : console.debug(value);
   return value;
 }
