@@ -1,0 +1,30 @@
+
+# -*- mode: snippet -*-
+# name: debug-timer
+# key: debugtimer
+# --
+function debugTimed<T>(fn: () => T, identifier: string): T {
+  const start = Date.now();
+  console.debug(identifier, 'started');
+
+  const result = fn();
+
+  console.debug(identifier, 'returned after', Date.now() - start, 'ms');
+
+  return result;
+}
+async function debugTimedAsync<T>(fn: () => Promise<T>, identifier: string): Promise<T> {
+  const start = Date.now();
+  console.debug(identifier, 'started');
+
+  try {
+    const result = await fn();
+
+    console.debug(identifier, 'returned after', Date.now() - start, 'ms');
+
+    return result;
+  } catch (error) {
+    console.debug(identifier, 'threw an error', error);
+    throw error;
+  }
+}

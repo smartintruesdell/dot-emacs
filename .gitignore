@@ -5,7 +5,6 @@
 .mc-lists.el
 .org-id-locations
 bookmarks
-config.el
 elpa
 eshell
 projectile-bookmarks.eld
@@ -13,3 +12,11 @@ recentf
 straight
 transient
 var
+emojis
+org-persist
+tree-sitter
+backups
+eln-cache
+history
+.DS_Store
+.auto-save-list

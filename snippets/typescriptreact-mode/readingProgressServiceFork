@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: readingProgressServiceFork
+# key: rpsf
+# --
+if (remoteConfigStore.readingProgressServiceVersion !== 2) {
+  $0
+}
