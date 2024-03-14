@@ -363,10 +363,16 @@
     (message "Microsoft Windows")))
  ((string-equal system-type "darwin") ; Mac OS X
   (progn
-    (setq mac-option-key-is-meta t)
-    (setq mac-command-key-is-meta nil)
-    (setq mac-command-modifier 'option)
-    (setq mac-option-modifier 'meta)
+    ;; Macbook Keyboard
+    (setq mac-option-key-is-meta nil)
+    (setq mac-command-key-is-meta t)
+    (setq mac-command-modifier 'meta)
+    (setq mac-option-modifier 'option)
+    ;; Mechanical Keyboard
+    ;; (setq mac-option-key-is-meta t)
+    ;; (setq mac-command-key-is-meta nil)
+    ;; (setq mac-command-modifier 'option)
+    ;; (setq mac-option-modifier 'meta)
     (message "Mac OS X")))
  ((string-equal system-type "gnu/linux") ; linux
   (progn
@@ -481,13 +487,11 @@
 (require 'git-gutter)
 (global-git-gutter-mode +1)
 
-(require 'yasnippet)
-(require 'yasnippet-snippets)
-(yasnippet-snippets-initialize)
-(bind-key "C-c & C-s" 'yas-insert-snippet)
+(yas-global-mode)
 
 (bind-key "C-w" 'backward-kill-word)
 (bind-key "C-x C-k" 'kill-region)
 (bind-key "C-c C-k" 'kill-region)
 
-(setq-default frame-title-format '("Shawn's Emacs :: %b"))
+;; This causes Emacs to crash when restoring from the background, somehow
+;;(setq-default frame-title-format '("Shawn's Emacs :: %b"))
