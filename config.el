@@ -63,7 +63,6 @@
         yasnippet-snippets  ; Presets
         smartparens         ; Only somewhat smart
         hungry-delete       ; eat all the whitespace
-        window              ; useful window/frame management
         switch-window       ; smart window switching
         all-the-icons       ; cute icons
         all-the-icons-dired ; cute icons, dired edition
@@ -106,13 +105,13 @@
   (tabnine-start-process)
   :bind
   (:map tabnine-completion-map
-	 ("<tab>" . tabnine-accept-completion)
-	 ("TAB" . tabnine-accept-completion)
-	 ("M-f" . tabnine-accept-completion-by-word)
-	 ("M-<return>" . tabnine-accept-completion-by-line)
-	 ("C-g" . tabnine-clear-overlay)
-	 ("M-[" . tabnine-previous-completion)
-	 ("M-]" . tabnine-next-completion)))
+	      ("<tab>" . tabnine-accept-completion)
+	      ("TAB" . tabnine-accept-completion)
+	      ("M-f" . tabnine-accept-completion-by-word)
+	      ("M-<return>" . tabnine-accept-completion-by-line)
+	      ("C-g" . tabnine-clear-overlay)
+	      ("M-[" . tabnine-previous-completion)
+	      ("M-]" . tabnine-next-completion)))
 
 ;; NANO modules
 
@@ -127,6 +126,7 @@
 
 (require 'nano-theme)
 (setq nano-fonts-use t) ; Use theme font stack
+(setq nano-light-salient "SteelBlue3")
 (nano-light)
 
 (set-face-attribute 'default nil
@@ -145,12 +145,12 @@
 ;;                     :slant 'italic)
 
 (set-fontset-font t 'unicode
-                    (font-spec :name "Inconsolata Light"
-                               :size 16) nil)
+                  (font-spec :name "Inconsolata Light"
+                             :size 16) nil)
 
 (set-fontset-font t '(#xe000 . #xffdd)
-                     (font-spec :name "RobotoMono Nerd Font"
-                                :size 12) nil)
+                  (font-spec :name "RobotoMono Nerd Font"
+                             :size 12) nil)
 
 ;; Completion
 (require 'corfu)
@@ -373,10 +373,10 @@
     (message "Linux"))))
 
 (when window-system
-    (menu-bar-mode -1)              ; Disable the menu bar
-    (scroll-bar-mode -1)            ; Disable the scroll bar
-    (tool-bar-mode -1)              ; Disable the tool bar
-    (tooltip-mode -1))              ; Disable the tooltips
+  (menu-bar-mode -1)              ; Disable the menu bar
+  (scroll-bar-mode -1)            ; Disable the scroll bar
+  (tool-bar-mode -1)              ; Disable the tool bar
+  (tooltip-mode -1))              ; Disable the tooltips
 
 ;; Software Engineering
 
@@ -412,6 +412,7 @@
 (add-to-list 'eglot-server-programs
              '((typescript-mode) "typescript-language-server" "--stdio")
              '((tsx-ts-mode) "typescript-language-server" "--stdio"))
+(bind-key "C-x ." 'eglot-code-actions)
 
 (require 'apheleia)
 (apheleia-global-mode +1)
@@ -440,9 +441,8 @@
          ("M-n" . move-text-down))
   :config (move-text-default-bindings))
 
-(use-package all-the-icons
-  :custom (all-the-icons-ivy-buffer-commands '(ivy-switch-buffer-other-window)))
 
+(require 'all-the-icons)
 (use-package all-the-icons-dired
   :init
   (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
@@ -451,30 +451,20 @@
   :custom (sp-escape-quotes-after-insert nil)
   :config (smartparens-global-mode 1))
 
-(use-package simple
-  :straight nil
-  :ensure nil
-  :hook (before-save . delete-trailing-whitespace))
-
 (use-package hungry-delete :config (global-hungry-delete-mode))
 
-(use-package window
-  :straight nil
-  :ensure nil
-  :bind (("C-x 3" . hsplit-last-buffer)
-         ("C-x 2" . vsplit-last-buffer))
-  :preface
-  (defun hsplit-last-buffer ()
-    "Gives the focus to the last created horizontal window."
-    (interactive)
-    (split-window-horizontally)
-    (other-window 1))
-
-  (defun vsplit-last-buffer ()
-    "Gives the focus to the last created vertical window."
-    (interactive)
-    (split-window-vertically)
-    (other-window 1)))
+(defun my/hsplit-last-buffer ()
+  "Gives the focus to the last created horizontal window."
+  (interactive)
+  (split-window-horizontally)
+  (other-window 1))
+(defun my/vsplit-last-buffer ()
+  "Gives the focus to the last created vertical window."
+  (interactive)
+  (split-window-vertically)
+  (other-window 1))
+(bind-key "C-x 3" 'my/hsplit-last-buffer)
+(bind-key "C-x 2" 'my/vsplit-last-buffer)
 
 (use-package switch-window
   :straight nil
