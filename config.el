@@ -61,6 +61,7 @@
         eglot               ; language-server backing for Emacs
         yasnippet           ; Awesome snippets
         yasnippet-snippets  ; Presets
+        cargo               ; Rust cargo minor-mode
         smartparens         ; Only somewhat smart
         hungry-delete       ; eat all the whitespace
         switch-window       ; smart window switching
@@ -418,6 +419,12 @@
 (add-to-list 'eglot-server-programs
              '((typescript-mode) "typescript-language-server" "--stdio")
              '((tsx-ts-mode) "typescript-language-server" "--stdio"))
+(add-to-list 'eglot-server-programs
+             `(rust-ts-mode . ("rust-analyzer" :initializationOptions
+                               ( :procMacro (:enable t)
+                                 :cargo ( :buildScripts (:enable t)
+                                          :features "all")))))
+
 (bind-key "C-x ." 'eglot-code-actions)
 
 (require 'apheleia)
@@ -495,3 +502,7 @@
 
 ;; This causes Emacs to crash when restoring from the background, somehow
 ;;(setq-default frame-title-format '("Shawn's Emacs :: %b"))
+
+(add-to-list 'auto-mode-alist '("\\.rs" . rust-ts-mode))
+(add-hook 'rust-ts-mode-hook 'cargo-minor-mode)
+(add-hook 'rust-ts-mode-hook 'eglot-ensure)
