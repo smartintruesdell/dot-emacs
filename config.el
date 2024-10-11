@@ -1,3 +1,6 @@
+;; config.el
+;; The Emacs configuration of Shawn Truesdell
+
 ;; Package Management - Straight.el
 (setq straight-check-for-modifications nil)
 
@@ -129,6 +132,8 @@
 (setq nano-fonts-use t) ; Use theme font stack
 (setq nano-light-salient "SteelBlue3")
 (nano-light)
+;; As a note, to get the titlebar to theme correctly on MacOS you should do
+;; $ defaults write org.gnu.Emacs TransparentTitleBar DARK
 
 (set-face-attribute 'default nil
                     :family "Roboto Mono"
@@ -273,7 +278,7 @@
  cursor-in-non-selected-windows t                 ; Hide the cursor in inactive windows
  display-time-default-load-average nil            ; Don't display load average
  fill-column 80                                   ; Set width for automatic line breaks
- help-window-select t                             ; Focus new help windows when opened
+ help-window-select t                             ; Focus new help windows when
  indent-tabs-mode nil                             ; Use spaces instead of tabs
  inhibit-startup-screen t                         ; Disable start-up screen
  initial-scratch-message ""                       ; Empty the initial *scratch* buffer
@@ -387,6 +392,9 @@
 
 ;; Software Engineering
 
+(require 'typescript-mode)
+(add-to-list 'auto-mode-alist '("\\.tsx?" . tsx-ts-mode))
+
 ;; - Syntax Highlighting
 (require 'treesit)
 
@@ -396,6 +404,7 @@
 (add-to-list 'treesit-language-source-alist
              '(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
 ;; (setq treesit-load-name-override-list '((tsx "libtree-sitter-tsx" "tree_sitter_typescript")))
+(add-to-list 'tree-sitter-major-mode-language-alist '(tsx-ts-mode . typescript))
 
 (when
     (not (treesit-language-available-p 'typescript))
@@ -403,10 +412,6 @@
 (when
     (not (treesit-language-available-p 'tsx))
   (treesit-install-language-grammar 'tsx))
-
-(require 'typescript-mode)
-(add-to-list 'auto-mode-alist '("\\.tsx?" . tsx-ts-mode))
-(add-to-list 'tree-sitter-major-mode-language-alist '(tsx-ts-mode . typescript))
 
 (require 'tsi)
 (add-hook 'tsx-ts-mode-hook (lambda () (tsi-typescript-mode 1)))
@@ -506,3 +511,96 @@
 (add-to-list 'auto-mode-alist '("\\.rs" . rust-ts-mode))
 (add-hook 'rust-ts-mode-hook 'cargo-minor-mode)
 (add-hook 'rust-ts-mode-hook 'eglot-ensure)
+
+(defun my/insert-random-uuid ()
+  "Insert a UUID.
+This commands calls “uuidgen” on MacOS, Linux, and calls PowelShell on Microsoft Windows.
+URL `http://xahlee.info/emacs/emacs/elisp_generate_uuid.html'
+Version: 2020-06-04 2023-05-13"
+  (interactive)
+  (cond
+   ((eq system-type 'windows-nt)
+    (shell-command "pwsh.exe -Command [guid]::NewGuid().toString()" t))
+   ((eq system-type 'darwin) ; Mac
+    (shell-command "uuidgen" t))
+   ((eq system-type 'gnu/linux)
+    (shell-command "uuidgen" t))
+   (t
+    ;; code here by Christopher Wellons, 2011-11-18.
+    ;; and editted Hideki Saito further to generate all valid variants for "N" in xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx format.
+    (let ((xstr (md5 (format "%s%s%s%s%s%s%s%s%s%s"
+                             (user-uid)
+                             (emacs-pid)
+                             (system-name)
+                             (user-full-name)
+                             (current-time)
+                             (emacs-uptime)
+                             (garbage-collect)
+                             (buffer-string)
+                             (random)
+                             (recent-keys)))))
+      (insert (format "%s-%s-4%s-%s%s-%s"
+                      (substring xstr 0 8)
+                      (substring xstr 8 12)
+                      (substring xstr 13 16)
+                      (format "%x" (+ 8 (random 4)))
+                      (substring xstr 17 20)
+                      (substring xstr 20 32)))))))
+
+;; Add ansi-color support to the compilation buffer.
+(require 'ansi-color)
+(defun endless/colorize-compilation ()
+  "Colorize from `compilation-filter-start' to `point'."
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region
+     compilation-filter-start (point))))
+
+(add-hook 'compilation-filter-hook
+          #'endless/colorize-compilation)
+
+(defun dired-concatenate-marked-files ()
+  "Concatenate marked files in Dired into a new buffer with each file separated by a comment, padded with * to a width of 80 characters."
+  (interactive)
+  (let ((files (dired-get-marked-files))  ;; Get the marked files
+        (buffer-name "*Concatenated Files*")
+        (line-width 80))  ;; Fixed width for the comment line
+    (with-current-buffer (get-buffer-create buffer-name)
+      (erase-buffer)  ;; Clear buffer before inserting anything
+      (dolist (file files)
+        (goto-char (point-max))  ;; Move to the end of the buffer
+        ;; Prepare the comment line with filename, followed by * to fill up to 80 characters
+        (let* ((filename (format "// %s " (file-name-nondirectory file)))
+               (padding (make-string (- line-width (length filename)) ?*)))  ;; Create padding
+          (insert (concat filename padding "\n")))  ;; Insert the padded filename comment
+        ;; Insert the contents of the file, followed by a single newline
+        (insert-file-contents file)
+        (goto-char (point-max))  ;; Move to the end after inserting contents
+        (insert "\n"))  ;; Insert a newline after the file contents
+      (goto-char (point-min)))  ;; Move point to the beginning of the buffer
+    (switch-to-buffer buffer-name)))  ;; Show the buffer to the user
+
+(require 'org)
+(require 'project)
+
+(defun my/project-org-file ()
+  "Return the path to the project's tasks.org file, creating it if necessary."
+  (let* ((project (or (project-current t)
+                      (error "Not in a project")))
+         (project-root (project-root project)))
+    (let ((org-file (expand-file-name "tasks.org" project-root)))
+      ;; Create the file if it doesn't exist
+      (unless (file-exists-p org-file)
+        (with-temp-buffer
+          (insert "#+TITLE: Project Tasks\n\n* Tasks\n")
+          (write-file org-file)))
+      ;; Ensure the "Tasks" heading exists
+      (with-current-buffer (find-file-noselect org-file)
+        (unless (org-find-exact-headline-in-buffer "Tasks")
+          (goto-char (point-max))
+          (insert "\n* Tasks\n")))
+      org-file)))
+
+(setq org-capture-templates
+      '(("p" "Project Task" entry
+         (file+headline my/project-org-file "Tasks")
+         "* TODO %?\n  %U\n  %a")))
