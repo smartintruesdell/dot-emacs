@@ -1,0 +1,132 @@
+;;; -*- coding: utf-8; mode: lisp-data -*-
+(("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-663-vertical-F-e2e-test-expansion/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-663-vertical-F-e2e-test-expansion/.agents"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/nomerge-discovery/doc/vertical-h-devops-spec.txt"
+  . 391)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-659-investigation/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-659-investigation/doc"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-659-investigation/doc/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-659-investigation/doc/pug-659-investigation.md"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-659-investigation/doc/pug-659-investigation.md"
+  . 11766)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-659-investigation/crowdin-public.yml"
+  . 1232)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.agent-deck/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.agent-deck/worktree-init.sh"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.agent-deck/worktree-init.sh"
+  . 1762)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/codeigniter/application/controllers/forms_and_tables/products.php"
+  . 103037)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/.claude/skills/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/.claude/skills/pr-tour"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/.claude/skills/pr-tour/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/.claude/skills/pr-tour/SKILL.md"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/.claude/skills/pr-tour/SKILL.md"
+  . 5071)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/codeigniter/src/Modules/Growthbook/GrowthbookFeatures.php"
+  . 3012)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/codeigniter/src/Modules/Growthbook/GrowthbookService.php"
+  . 5868)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/codeigniter/application/models/table/user_table.php"
+  . 151124)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/frontend/app/apps/onboarding/src/app/pages/confirm-email-page/services/email-verification.service.ts"
+  . 53)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/frontend/app/apps/onboarding/src/app/pages/confirm-email-page/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/frontend/app/apps/onboarding/src/app/pages/confirm-email-page/confirm-email-page.component.ts"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/frontend/app/apps/onboarding/src/app/pages/confirm-email-page/confirm-email-page.component.ts"
+  . 1312)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/frontend/app/apps/digistore/src/app/shared/components/missing-requirements-dialog/missing-requirements-dialog.component.ts"
+  . 2774)
+ ("/Users/shawntruesdell/.claude/plans/can-you-draft-for-magical-corbato.md"
+  . 7388)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/"
+  (dired-filename . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-660-more-feature-flag-fixes"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-660-more-feature-flag-fixes/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-660-more-feature-flag-fixes/.agents"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-660-more-feature-flag-fixes/symfony/src/Service/UserEventTracking/Providers/PostHogProvider.php"
+  . 1755)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-660-more-feature-flag-fixes/frontend/app/apps/onboarding/src/app/pages/confirm-email-page/confirm-email-page.component.ts"
+  . 1855)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-660-more-feature-flag-fixes/frontend/app/apps/onboarding/src/app/pages/confirm-email-page/services/email-verification.service.ts"
+  . 2668)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-660-more-feature-flag-fixes/frontend/app/libs/tracking-core/src/lib/providers/posthog-provider.ts"
+  . 4492)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-660-more-feature-flag-fixes/frontend/app/apps/digistore/src/app/views/account/products/overview/product-approval/product-approval-status.component.ts"
+  . 6886)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-552-investigation/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-552-investigation/doc"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-552-investigation/doc/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-552-investigation/doc/tasks"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-552-investigation/doc/tasks/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-552-investigation/doc/tasks/PUG-552.md"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/feature-PUG-552-investigation/doc/tasks/PUG-552.md"
+  . 12608)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/doc"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/doc/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/doc/nextjs-frontend-foundation-plan.md"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/doc/nextjs-frontend-foundation-plan.md"
+  . 13086)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-663-vertical-c-add-api-auth-for-bff/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-663-vertical-c-add-api-auth-for-bff/doc"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-663-vertical-c-add-api-auth-for-bff/doc/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-663-vertical-c-add-api-auth-for-bff/doc/nextjs-frontend-foundation-plan.md"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/PUG-660-more-feature-flag-fixes/Makefile"
+  . 14573)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.agent-deck/ensure-ready.sh"
+  . 1622)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.agent-deck/worktree-setup.sh"
+  . 149)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.bare/worktrees/digistore-pug-621/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.bare/worktrees/digistore-pug-621/HEAD"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.bare/worktrees/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.bare/worktrees/digistore-pug-621"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.bare/"
+  (dired-filename
+   . "/Users/shawntruesdell/workspace/ds24-digistore/.bare/worktrees"))
+ ("/Users/shawntruesdell/workspace/ds24-digistore/CLAUDE.md" . 3018)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.agent-deck/config.toml" . 129)
+ ("/Users/shawntruesdell/" (dired-filename . "/Users/shawntruesdell/.rnd"))
+ ("/Users/shawntruesdell/workspace/"
+  (dired-filename . "/Users/shawntruesdell/workspace/ds24-digistore"))
+ ("/Users/shawntruesdell/.zshrc" . 1268)
+ ("/Users/shawntruesdell/.agent-deck/watcher/gh-alerts/"
+  (dired-filename . "/Users/shawntruesdell/.agent-deck/watcher"))
+ ("/Users/shawntruesdell/.agent-deck/watcher/github-ds24-struesdell/"
+  (dired-filename . "/Users/shawntruesdell/.agent-deck/watcher"))
+ ("/Users/shawntruesdell/.agent-deck/watcher/"
+  (dired-filename . "/Users/shawntruesdell/.agent-deck"))
+ ("/Users/shawntruesdell/.agent-deck/"
+  (dired-filename . "/Users/shawntruesdell/.agent-deck/config.toml"))
+ ("/Users/shawntruesdell/.agent-deck/config.toml" . 2853)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/doc/nextjs-frontend-foundation.md"
+  . 7867)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/Makefile"
+  . 18302)
+ ("/Users/shawntruesdell/workspace/ds24-digistore/.worktrees/NUX-add-nextjs-scaffolding/symfony/src/Service/UserEventTracking/Providers/PostHogProvider.php"
+  . 628)
+ ("/Users/shawntruesdell/.agent-deck/watcher/clients.json" . 152)
+ ("/Users/shawntruesdell/.agent-deck/watcher/github-ds24-struesdell/watcher.toml"
+  . 240)
+ ("/Users/shawntruesdell/.emacs.d/config.el" . 5126)
+ ("/Users/shawntruesdell/Desktop/questionnaire.md" . 739))

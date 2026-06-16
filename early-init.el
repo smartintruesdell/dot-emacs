@@ -8,6 +8,10 @@
 (setq native-comp-eln-load-path
       (list (expand-file-name "eln-cache" user-emacs-directory)))
 
+;; Match macOS title bar to the frame background (nano-light = light appearance)
+(push '(ns-transparent-titlebar . t) default-frame-alist)
+(push '(ns-appearance . light)       default-frame-alist)
+
 ;; Reset garbage collector limit after init process has ended (8Mo)
 (add-hook 'after-init-hook
           #'(lambda () (setq gc-cons-threshold (* 8 1024 1024))))
