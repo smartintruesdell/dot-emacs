@@ -33,6 +33,62 @@
   :config
   (global-kkp-mode +1))
 
+;; Ghostty config generation
+;; Ghostty (the outer terminal) reads its config at *its* startup, before Emacs
+;; runs — so this maintains the file for the *next* Ghostty launch, keeping the
+;; single source of truth here in dot-emacs instead of an unsynced dotfile. Only
+;; a delimited managed block is owned; other hand-added settings are preserved.
+;; Keys prefixed "macos-" are emitted only on macOS, so syncing to Linux stays
+;; correct.
+
+(defvar my/ghostty-settings
+  '(("macos-option-as-alt" . "left"))
+  "Ghostty settings Emacs owns, written into a managed block in the config.
+Alist of (KEY . VALUE) strings. Keys starting with \"macos-\" are emitted
+only when `system-type' is darwin.")
+
+(defvar my/ghostty-config-file
+  (expand-file-name "ghostty/config"
+                    (or (getenv "XDG_CONFIG_HOME") "~/.config"))
+  "Path to the Ghostty config file Emacs maintains.")
+
+(defun my/ghostty--managed-block ()
+  "Return the managed-block text for the current platform."
+  (let ((lines (seq-remove
+                (lambda (kv)
+                  (and (string-prefix-p "macos-" (car kv))
+                       (not (eq system-type 'darwin))))
+                my/ghostty-settings)))
+    (concat "# >>> managed by emacs (dot-emacs) — do not edit >>>\n"
+            (mapconcat (lambda (kv) (format "%s = %s" (car kv) (cdr kv)))
+                       lines "\n")
+            "\n# <<< managed by emacs (dot-emacs) <<<")))
+
+(defun my/ghostty-sync-config ()
+  "Sync the managed block in the Ghostty config with `my/ghostty-settings'.
+Preserves other content, writes only when the file would change, and takes
+effect on the next Ghostty launch."
+  (let* ((file my/ghostty-config-file)
+         (block (my/ghostty--managed-block))
+         (existing (when (file-readable-p file)
+                     (with-temp-buffer
+                       (insert-file-contents file)
+                       (buffer-string))))
+         (updated
+          (cond
+           ((null existing) (concat block "\n"))
+           ((string-match "# >>> managed by emacs\\(?:.\\|\n\\)*?# <<< managed by emacs.*$"
+                          existing)
+            (replace-match block t t existing))
+           (t (concat existing (unless (string-suffix-p "\n" existing) "\n")
+                      "\n" block "\n")))))
+    (unless (equal existing updated)
+      (make-directory (file-name-directory file) t)
+      (with-temp-file file (insert updated))
+      (message "Ghostty config synced: %s" file))))
+
+(add-hook 'emacs-startup-hook #'my/ghostty-sync-config)
+
 ;; Backups
 ;; Kept with explicit path for vc-backup compatibility (overrides no-littering's default)
 
