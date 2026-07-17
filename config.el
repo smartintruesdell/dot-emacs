@@ -60,9 +60,18 @@
                    forge
                    git-gutter
                    magit-delta
+                   ;; Notes / Zettelkasten (Denote — DB-free)
+                   denote
+                   denote-org
+                   denote-journal
+                   denote-sequence
+                   consult-denote
+                   denote-explore
                    ;; File formats
                    markdown-mode
                    yaml-mode
+                   grip-mode
+                   ox-gfm
                    ;; Infrastructure
                    use-package
                    bind-key
@@ -90,6 +99,7 @@
                    gptel
                    ;; Terminal
                    vterm
+                   kkp
                    ;; Editing utilities
                    string-inflection
                    vundo
@@ -110,6 +120,12 @@
  '(eglot-booster :type git :host github :repo "jdtsmith/eglot-booster"))
 (straight-use-package
  '(combobulate :type git :host github :repo "mickeynp/combobulate"))
+;; ghostel — pinned to its git repo (mirrors the MELPA recipe's :files, incl. the
+;; src/vendor/build.zig the native-module installer needs) because older straight
+;; recipe caches predate ghostel's MELPA addition.
+(straight-use-package
+ '(ghostel :type git :host github :repo "dakra/ghostel"
+           :files (:defaults "etc" "src" "vendor" "build.zig" "build.zig.zon" "symbols.map")))
 
 ;; --- Shell PATH (must run early so later packages can find binaries) ---
 
@@ -141,5 +157,7 @@
 (my/load-module "lsp")
 (my/load-module "languages")
 (my/load-module "org")
+(my/load-module "markdown")
+(my/load-module "denote")
 (my/load-module "llm")
 (my/load-module "keybindings")

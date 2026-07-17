@@ -88,8 +88,21 @@
 
 ;; vterm — full-featured terminal emulator (compiles a C module on first load)
 
+;; ghostel — primary terminal (C-c t). libghostty-vt forwards the Kitty keyboard
+;; protocol and SGR mouse *to child programs*, so nested TUIs (agent-deck, Claude
+;; Code) get bare ESC, Shift+Enter, and mouse-wheel scroll natively — no vterm
+;; workarounds needed. The native module downloads automatically on first launch.
+
+(use-package ghostel
+  :bind ("C-c t" . ghostel))
+
+;; vterm — kept as a fallback on C-c T. Faster raw throughput, but can't forward
+;; the Kitty keyboard protocol/mouse to children (hence the C-c C-e escape helper).
+
 (use-package vterm
-  :bind ("C-c t" . vterm)
+  :bind (("C-c T" . vterm)
+         :map vterm-mode-map
+         ("C-c C-e" . vterm-send-escape))
   :custom
   (vterm-max-scrollback 10000)
   (vterm-kill-buffer-on-exit t))

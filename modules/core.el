@@ -21,6 +21,18 @@
 (set-keyboard-coding-system 'utf-8)
 (set-language-environment "English")
 
+;; kkp — Kitty Keyboard Protocol
+;; In a plain TTY (emacs -nw) the legacy encoding conflates keys: a bare ESC is
+;; the same byte as the Meta prefix, C-<letter> variants collapse, etc. On a
+;; terminal that speaks the protocol (Ghostty, kitty, foot, WezTerm) kkp makes
+;; Emacs read those keys unambiguously — so bare ESC is a clean `escape` event
+;; instead of a held Meta prefix. Auto-negotiates per frame; no-op in GUI frames
+;; and on terminals without support.
+
+(use-package kkp
+  :config
+  (global-kkp-mode +1))
+
 ;; Backups
 ;; Kept with explicit path for vc-backup compatibility (overrides no-littering's default)
 
